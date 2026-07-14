@@ -1,0 +1,26 @@
+from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict
+
+
+class RoleCreate(BaseModel):
+    code: str
+    name: str
+    description: str | None = None
+
+
+class RoleUpdate(BaseModel):
+    code: str | None = None
+    name: str | None = None
+    description: str | None = None
+    is_active: bool | None = None
+
+
+class RoleResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    code: str
+    name: str
+    description: str | None = None
+    is_active: bool
