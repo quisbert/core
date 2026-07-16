@@ -29,61 +29,94 @@ def create_token(
     token_type: str,
     expires_delta: timedelta,
     extra_claims: dict[str, Any] | None = None,
-) -> str:
+) -> dict[str, Any]:
+
     now = datetime.now(timezone.utc)
+
+    jti = str(uuid.uuid4())
+
+    expires_at = now + expires_delta
 
     payload: dict[str, Any] = {
         "sub": subject,
         "type": token_type,
-        "jti": str(uuid.uuid4()),
+        "jti": jti,
         "iat": now,
-        "exp": now + expires_delta,
+        "exp": expires_at,
     }
 
     if extra_claims:
         payload.update(extra_claims)
 
-    return jwt.encode(
+    token = jwt.encode(
         payload,
         settings.secret_key,
         algorithm=settings.algorithm,
     )
 
+    return {
+        "token": token,
+        "jti": jti,
+        "expires_at": expires_at,
+    }
 
-def create_access_token(user_id: uuid.UUID) -> str:
+
+def create_access_token(
+    user_id: uuid.UUID,
+) -> dict[str, Any]:
+
     return create_token(
         subject=str(user_id),
         token_type="access",
         expires_delta=timedelta(
-            minutes=settings.access_token_expire_minutes
+            minutes=settings.access_token_expire_minutes,
         ),
     )
 
 
-def create_refresh_token(user_id: uuid.UUID) -> str:
+def create_refresh_token(
+    user_id: uuid.UUID,
+) -> dict[str, Any]:
+
     return create_token(
         subject=str(user_id),
         token_type="refresh",
         expires_delta=timedelta(
-            days=settings.refresh_token_expire_days
+            days=settings.refresh_token_expire_days,
         ),
     )
 
 
-def decode_token(token: str, expected_type: str) -> dict[str, Any]:
+def decode_token(
+    token: str,
+    expected_type: str,
+) -> dict[str, Any]:
+
     try:
+
         payload = jwt.decode(
             token,
             settings.secret_key,
             algorithms=[settings.algorithm],
             options={
-                "require": ["sub", "type", "jti", "iat", "exp"],
+                "require": [
+                    "sub",
+                    "type",
+                    "jti",
+                    "iat",
+                    "exp",
+                ],
             },
         )
+
     except InvalidTokenError as exc:
-        raise TokenError("Invalid or expired token.") from exc
+        raise TokenError(
+            "Invalid or expired token."
+        ) from exc
 
     if payload.get("type") != expected_type:
-        raise TokenError("Invalid token type.")
+        raise TokenError(
+            "Invalid token type."
+        )
 
     return payload

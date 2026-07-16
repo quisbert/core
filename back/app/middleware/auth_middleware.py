@@ -1,9 +1,8 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
-
 from app.core.security import TokenError, decode_token
 
-
+import uuid
 class AuthenticationMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         request.state.user_id = None
@@ -20,9 +19,10 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
                         token,
                         expected_type="access",
                     )
-                    request.state.user_id = payload["sub"]
+                    request.state.user_id = uuid.UUID(payload["sub"])
                     request.state.token_payload = payload
                 except TokenError:
+                    # The request will be validated later by the endpoint dependencies.
                     pass
 
         return await call_next(request)

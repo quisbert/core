@@ -8,6 +8,8 @@ from app.seeders.role_seeder import run as role_seeder
 from app.seeders.permission_seeder import run as permission_seeder
 from app.seeders.admin_seeder import run as admin_seeder
 from app.seeders.role_permission_seeder import run as role_permission_seeder
+from app.seeders.theme_seeder import run as theme_seeder
+from app.seeders.organization_setting_seeder import run as organization_setting_seeder
 
 
 def run() -> None:
@@ -33,6 +35,12 @@ def run() -> None:
 
         print("Seeding role permissions...")
         role_permission_seeder(db)
+
+        print("Seeding theme...")
+        theme_seeder(db)
+
+        print("Seeding organization settings...")
+        organization_setting_seeder(db)
 
         print("Seed completed successfully.")
 

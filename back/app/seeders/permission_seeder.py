@@ -54,6 +54,13 @@ def run(db: Session) -> None:
         ("notifications.delete","Delete Notifications"),
         ("notifications.reply","Reply Notifications"),
 
+        # Organization
+        ("organization.read", "Read Organization"),
+        ("organization.update", "Update Organization"),
+
+        # Themes
+        ("themes.read", "Read Themes"),
+        ("themes.update", "Update Themes"),
     ]
 
     for code, name in permissions:

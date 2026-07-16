@@ -8,3 +8,8 @@ from app.models.role_permission import RolePermission
 from app.models.user_role import UserRole
 from app.models.file import File
 from app.models.audit_log import AuditLog
+from app.models.user_session import UserSession
+from app.models.notification_user import NotificationUser
+from app.models.notification import Notification
+from app.models.theme import Theme
+from app.models.organization_setting import OrganizationSetting
